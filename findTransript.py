@@ -12,16 +12,25 @@ readfile.close()
 t_line=[]
 for every_line in filedata:
        t_line.append(every_line.split())
-    
-size=len(t_line)
-             
+size=len(t_line)     
 kmer=[]
 for i in range(len(t_line)):
     read = t_line[i]
     kmer.append(read[0])
-
-#create overlap graph
-graph={}
+graph={}                           
+def find_transcripts(graph, start, end, transcript=[]):
+        transcript = transcript + [start]
+        if start == end:
+            return [transcript]
+        if not graph.has_key(start):
+            return []
+        transcripts = []
+        for node in graph[start]:
+            if node not in transcript:
+                newtranscripts = find_transcripts(graph, node, end, transcript)
+                for newtranscript in newtranscripts:
+                    transcripts.append(newtranscript)
+        return transcripts    
 for i in range(len(kmer)):
     substr1 = kmer[i]      
     for j in range(len(kmer)):
@@ -36,23 +45,6 @@ for i in range(len(kmer)):
                         graph.setdefault(substr1, [])
                         graph[substr1].append(substr2)
                         
-                        
-                        
-#graph traversal    
-def find_transcripts(graph, start, end, transcript=[]):
-        transcript = transcript + [start]
-        if start == end:
-            return [transcript]
-        if not graph.has_key(start):
-            return []
-        transcripts = []
-        for node in graph[start]:
-            if node not in transcript:
-                newtranscripts = find_transcripts(graph, node, end, transcript)
-                for newtranscript in newtranscripts:
-                    transcripts.append(newtranscript)
-        return transcripts    
-
 for i in range(len(kmer)):
     substr1 = kmer[i]      
     for j in range(len(kmer)):
